@@ -1,5 +1,5 @@
 # yahoostocks
-yahoostocks is not affiliated with Yahoo
+yahoostocks is not affiliated with the company Yahoo(exclamation)
 
 yahoostocks is a simple tool to make training and testing splits using stock market data from Yahoo
 
