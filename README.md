@@ -1,5 +1,5 @@
 # yahoostocks
-yahoostocks is a simple tool to make training and testing splits using stock data from Yahoo!
+yahoostocks is a simple tool to make training and testing splits using stock market data from Yahoo!
 
 When you instant the class object, it will either load the stock data from your files or get it from Yahoo!
 
