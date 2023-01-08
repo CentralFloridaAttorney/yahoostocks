@@ -1,8 +1,6 @@
 # yahoostocks
 yahoostocks is not affiliated with the company Yahoo(exclamation)
 
-yahoostocks is a simple tool to make training and testing splits using stock market data from Yahoo using a ticker symbol
-
 When you create an instance of YahooStock, it will either load the symbol's data from your files or get it from Yahoo
 
 To create an instance with data for Microsoft: msft_stock = YahooStock('MSFT')
