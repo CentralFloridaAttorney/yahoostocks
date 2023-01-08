@@ -1,7 +1,9 @@
 # yahoostocks
-yahoostocks is a simple tool to make training and testing splits using stock market data from Yahoo!
+yahoostocks is not affiliated with Yahoo
 
-When you instant the class object, it will either load the stock data from your files or get it from Yahoo!
+yahoostocks is a simple tool to make training and testing splits using stock market data from Yahoo
+
+When you instant the class object, it will either load the stock data from your files or get it from Yahoo
 
 To create an instance with stock data for Microsoft: msft_stock = YahooStock('MSFT')
 
