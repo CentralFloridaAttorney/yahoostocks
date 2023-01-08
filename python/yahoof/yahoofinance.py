@@ -1,4 +1,7 @@
 """
+This file is a modified version of Connor Sander's class.
+The modifications are copyrighted by John M. Iriye in 2022 under the MIT License.
+
 ==============================
 The Yahoo Financials Module
 Version: 1.6

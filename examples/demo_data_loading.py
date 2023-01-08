@@ -50,14 +50,14 @@ class TrainerMain:
         # init the dataset
         self.this_ticker = 'MSFT'
         stock_item = YahooStock(self.this_ticker)
-        stock_item.drop_column(5)
+        stock_item._drop_column(5)
         classification = stock_item.get_classification_greater_prior(5, 2)
         close_price = stock_item.price_frame['close']
         volume = stock_item.price_frame['volume']
-        stock_item.drop_column(0)
-        stock_item.add_column(close_price)
-        stock_item.add_column(volume)
-        stock_item.add_column(classification)
+        stock_item._drop_column(0)
+        stock_item._add_column(close_price)
+        stock_item._add_column(volume)
+        stock_item._add_column(classification)
         # self.stock_price_data = stock_item.add_column(classification).astype(dtype=float)
         # try to scale data
         min_max = MinMaxScaler()
@@ -88,9 +88,9 @@ class TrainerMain:
         # init the dataset
         self.this_ticker = 'MSFT'
         stock_item = YahooStock(self.this_ticker)
-        stock_item.drop_column(5)
+        stock_item._drop_column(5)
         classification = stock_item.get_classification_greater_prior(5, 2)
-        self.stock_price_data = stock_item.add_column(classification).astype(dtype=float)
+        self.stock_price_data = stock_item._add_column(classification).astype(dtype=float)
         # try to scale data
         min_max = MinMaxScaler()
         self.stock_price_data = min_max.fit_transform(self.stock_price_data)
