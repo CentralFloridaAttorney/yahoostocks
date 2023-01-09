@@ -1,6 +1,12 @@
 # Why use yahoostock.py?
 
-    Get Tesla's historical stock market data: tsla_stock = YahooStock('TSLA')
+    Get a stock's historical stock market data: 
+
+        tsla_stock = YahooStock('TSLA')
+
+    Create testing and training dataframes: 
+
+        x_train, y_train, x_target, y_target = tsla_stock.get_test_train_split(tsla_stock.price_frame, 3, 6, .87, 5)
 
 _yahoostocks is not affiliated with the company Yahoo(exclamation) or Tesla_
 
@@ -18,11 +24,7 @@ _yahoostocks is not affiliated with the company Yahoo(exclamation) or Tesla_
     
     1278077400|1.5399999618530273|1.24733304977417|1.5333329439163208|1.2799999713897705|77097000|1.2799999713897705|2010-07-02
 
-_TSLA data is not guaranteed to be accurate_
-
-## Create testing and training dataframes: 
-
-    x_train, y_train, x_target, y_target = tsla_stock.get_test_train_split(tsla_stock.price_frame, 3, 6, .87, 5)
+_TSLA data is never guaranteed to be accurate_
 
 ### x_train:
 
