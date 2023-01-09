@@ -30,7 +30,7 @@ _yahoostock is not affiliated with the company Yahoo(exclamation) or Tesla_
     
     1278077400|1.5399999618530273|1.24733304977417|1.5333329439163208|1.2799999713897705|77097000|1.2799999713897705|2010-07-02
 
-_TSLA data is never guaranteed to be accurate_
+_Tesla's stock market data is never guaranteed to be accurate_
 
 ### x_train:
 
