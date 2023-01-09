@@ -16,8 +16,9 @@ class Converter:
         fmt = ['---' for i in range(len(df.columns))]
         df_fmt = pd.DataFrame([fmt], columns=df.columns)
         df_formatted = pd.concat([df_fmt, df])
-        #display(Markdown(df_formatted.to_csv(sep="|", index=False)))
+        # display(Markdown(df_formatted.to_csv(sep="|", index=False)))
         return Markdown(df_formatted.to_csv(sep="|", index=False))
+
     #     return df_formatted
 
     @staticmethod
@@ -28,23 +29,17 @@ class Converter:
             return '\n'.join(['| {}'.format(row.split('|', 2)[-1]) for row in blob.split('\n')])
         return blob
 
+
 if __name__ == '__main__':
     stock_data = YahooStock(TICKER)
-    x_train, y_train, x_target, y_target = stock_data.get_test_train_split(
-        _data=stock_data.price_frame,
-        _train_start_col=3,
-        _batch_size=6,
-        _train_ratio=.87,
-        _target_column_start=5
-    )
-
-
-
+    x_train, y_train, x_target, y_target = stock_data.get_test_train_split(_data=stock_data.price_frame,
+                                                                           _train_end_col=3, _batch_size=6,
+                                                                           _train_ratio=.87, _target_column_start=5)
 
     converter = Converter()
     stock_markdown = converter.pandas_df_to_markdown_table(x_target)
     markdown_text = stock_markdown.data
-    markdown_file = open(BASE_PATH+TICKER+'_xtarget.md', 'w+')
+    markdown_file = open(BASE_PATH + TICKER + '_xtarget.md', 'w+')
     markdown_file.write(markdown_text)
     markdown_file.close()
     print('done!')

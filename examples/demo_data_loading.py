@@ -64,12 +64,7 @@ class TrainerMain:
 
         self.stock_price_data = min_max.fit_transform(stock_item.data_frame)
         self.x_train, self.x_target, self.y_train, self.y_target = stock_item.get_test_train_split(
-            _data=self.stock_price_data,
-            _train_start_col=2,
-            _batch_size=3,
-            _train_ratio=.6,
-            _target_column_start=3
-        )
+            _data=self.stock_price_data, _train_end_col=2, _batch_size=3, _train_ratio=.6, _target_column_start=3)
         self.x_train = torch.from_numpy(self.x_train)
         self.y_train = torch.from_numpy(self.y_train)
         self.x_target = torch.from_numpy(self.x_target)

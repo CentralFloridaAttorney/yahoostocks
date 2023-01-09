@@ -8,7 +8,7 @@
 
         x_train, y_train, x_target, y_target = stock_object.get_test_train_split(
             _data=stock_object.price_frame,
-            _train_start_col=3,
+            _train_end_col=3,
             _batch_size=6,
             _train_ratio=.87,
             _target_column_start=5
