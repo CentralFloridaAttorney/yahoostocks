@@ -20,9 +20,9 @@ _yahoostocks is not affiliated with the company Yahoo(exclamation) or Tesla_
 
 _TSLA data is not guaranteed to be accurate_
 
-# Create testing and training dataframes: x_train, y_train, x_target, y_target = tsla_stock.get_test_train_split(tsla_stock.price_frame, 3, 6, .87, 5)
+## Create testing and training dataframes: x_train, y_train, x_target, y_target = tsla_stock.get_test_train_split(tsla_stock.price_frame, 3, 6, .87, 5)
 
-## x_train:
+### x_train:
 
     date|high|low
 
@@ -36,7 +36,7 @@ _TSLA data is not guaranteed to be accurate_
     
     1278077400|1.5399999618530273|1.24733304977417
 
-## x_target:
+### x_target:
 
     volume
 
@@ -51,7 +51,7 @@ _TSLA data is not guaranteed to be accurate_
     77097000
 
 
-## y_train:
+### y_train:
 
     date|high|low
     
@@ -65,7 +65,7 @@ _TSLA data is not guaranteed to be accurate_
     
     1605191400|141.0|136.5066680908203
 
-## y_target:
+### y_target:
 
     volume
     
