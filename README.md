@@ -1,10 +1,10 @@
 # Why use yahoostock.py?
 
-    Get a stock's historical stock market data: 
+    Get a stock's historical market data: 
 
         tsla_stock = YahooStock('TSLA')
 
-    Create testing and training dataframes: 
+    Create testing and training sets for machine learning: 
 
         x_train, y_train, x_target, y_target = tsla_stock.get_test_train_split(tsla_stock.price_frame, 3, 6, .87, _target_column_start=5)
 
