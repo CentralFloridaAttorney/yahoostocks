@@ -126,7 +126,7 @@ class YahooStock:
         x_target = _data.iloc[0:num_x, _target_column_start:_target_column_start+1]
         y_training = _data.iloc[num_x:(num_x + num_y), 0:_split_col]
         y_target = _data.iloc[num_x:(num_x + num_y), _target_column_start:_target_column_start+1]
-        return x_training, x_target, y_training, y_target  # , _x_target, _y_target
+        return x_training, y_training, x_target, y_target  # , _x_target, _y_target
 
     def _load_ticker(self):
         yf = YahooFinancials(self.ticker)
@@ -144,16 +144,8 @@ class YahooStock:
 
 
 if __name__ == '__main__':
-    stockItem = YahooStock(tickerX)
-    multi_tickers = []
-    tickers = ['BTC-USD', 'MSFT', 'AMD']
-    for ticker in tickers:
-        multi_tickers.append(YahooStock(ticker))
-
-    stockItem._drop_column(7)
-    col1 = stockItem.get_price_data(4)
-    classification = stockItem.get_classification_greater_prior(2, 7)
-    stockItem._add_column(classification)
-    # data = stockItem.price_frame.to_numpy()
-    x_train, y_train, x_test, y_test = stockItem.get_test_train_split(stockItem.price_frame, 3, 6, .87, 5)
-    print('Finished!')
+    stock_object = YahooStock(tickerX)
+    col_5 = stock_object.get_price_data(4)
+    classification = stock_object.get_classification_greater_prior(2, 4)
+    x_train, y_train, x_target, y_target = stock_object.get_test_train_split(stock_object.price_frame, 3, 6, .87, 5)
+    print('Finished!' + tickerX)
