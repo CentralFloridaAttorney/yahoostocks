@@ -6,7 +6,7 @@
 
 _yahoostocks is not affiliated with the company Yahoo(exclamation) or Tesla_
 
-# TSLA data from output:
+# tsla_stock.price_frame:
 
     date|high|low|open|close|volume|adjclose|formatted_date
     
