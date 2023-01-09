@@ -56,7 +56,6 @@ from json import loads
 import pytz
 from bs4 import BeautifulSoup
 
-
 try:
     from urllib import FancyURLopener
 except:

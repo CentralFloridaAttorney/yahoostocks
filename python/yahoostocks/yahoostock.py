@@ -7,6 +7,7 @@ import torchvision.transforms as transforms
 
 from python.yahoof.yahoofinance import YahooFinancials
 from python.yahoostocks.classifier import Classifier
+
 tickerX = 'NIO'
 BASE_PATH = '../../data/stocks/'
 
@@ -107,11 +108,11 @@ class YahooStock:
         return temp_v
 
     @staticmethod
-    def get_test_train_split(_data, _train_start_col=2, _batch_size=4, _train_ratio=0.6, _target_column_start=3):
+    def get_test_train_split(_data, _train_end_col=2, _batch_size=4, _train_ratio=0.6, _target_column_start=3):
         """
 
         :param _data: a pandas.DataFrame with columns to be split for training and testing sets
-        :param _train_start_col: the column in the dataframe to divide between x and y values
+        :param _train_end_col: the column in the dataframe to divide between x and y values
         :param _batch_size: the number of samples you want in each batch.  This number is used to determine whether rows need to be truncated to make each batch an equal size.
         :param _train_ratio: the percentage of items for training and testing sets
         :param _target_column_start: the index, which starts at 0, of the column that contains the output result.  note that this may be changed to allow a range of output columns
@@ -119,7 +120,7 @@ class YahooStock:
         :return: _x_train, _x_target, _y_train, _y_target
         """
         # _batch_size and _train_ratio must be float types
-        split_col = int(_train_start_col)
+        split_col = int(_train_end_col)
         batch_size = int(_batch_size)
 
         num_rows, num_cols = _data.shape
@@ -134,10 +135,10 @@ class YahooStock:
         num_y = num_rows - num_x
         extra_rows_y = num_y % _batch_size
         num_y = num_y - extra_rows_y
-        x_training = _data.iloc[0:num_x, 0:_train_start_col]
-        x_target = _data.iloc[0:num_x, _target_column_start:_target_column_start+1]
-        y_training = _data.iloc[num_x:(num_x + num_y), 0:_train_start_col]
-        y_target = _data.iloc[num_x:(num_x + num_y), _target_column_start:_target_column_start+1]
+        x_training = _data.iloc[0:num_x, 0:_train_end_col]
+        x_target = _data.iloc[0:num_x, _target_column_start:_target_column_start + 1]
+        y_training = _data.iloc[num_x:(num_x + num_y), 0:_train_end_col]
+        y_target = _data.iloc[num_x:(num_x + num_y), _target_column_start:_target_column_start + 1]
         return x_training, y_training, x_target, y_target  # , _x_target, _y_target
 
 
@@ -145,11 +146,7 @@ if __name__ == '__main__':
     stock_object = YahooStock(tickerX)
     col_5 = stock_object.get_price_data(4)
     classification = stock_object.get_classification_greater_prior(2, 4)
-    x_train, y_train, x_target, y_target = stock_object.get_test_train_split(
-        _data=stock_object.price_frame,
-        _train_start_col=3,
-        _batch_size=6,
-        _train_ratio=.87,
-        _target_column_start=5
-    )
+    x_train, y_train, x_target, y_target = stock_object.get_test_train_split(_data=stock_object.price_frame,
+                                                                             _train_end_col=3, _batch_size=6,
+                                                                             _train_ratio=.87, _target_column_start=5)
     print('Finished YahooStock: ' + tickerX)
