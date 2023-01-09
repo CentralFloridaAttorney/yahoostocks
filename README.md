@@ -6,7 +6,7 @@
 
 _yahoostocks is not affiliated with the company Yahoo(exclamation) or Tesla_
 
-# Actual TSLA data:
+# TSLA data from output:
 
     date|high|low|open|close|volume|adjclose|formatted_date
     
@@ -39,3 +39,5 @@ _yahoostocks is not affiliated with the company Yahoo(exclamation) or Tesla_
     1279287000|1.4199999570846558|1.3366669416427612|1.3799999952316284|1.3760000467300415|39319500|1.3760000467300415|2010-07-16
     
     1279546200|1.4833329916000366|1.3946670293807983|1.4246670007705688|1.4606670141220093|37297500|1.4606670141220093|2010-07-19
+
+_TSLA data is not guaranteed to be accurate_
