@@ -30,7 +30,13 @@ class Converter:
 
 if __name__ == '__main__':
     stock_data = YahooStock(TICKER)
-    x_train, y_train, x_target, y_target = stock_data.get_test_train_split(stock_data.price_frame, 3, 6, .87, 5)
+    x_train, y_train, x_target, y_target = stock_data.get_test_train_split(
+        _data=stock_data.price_frame,
+        _train_start_col=3,
+        _batch_size=6,
+        _train_ratio=.87,
+        _target_column_start=5
+    )
 
 
 

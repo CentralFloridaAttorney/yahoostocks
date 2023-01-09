@@ -12,7 +12,6 @@ BASE_PATH = '../../data/stocks/'
 
 
 class YahooStock:
-
     def __init__(self, init_ticker="F"):
         """
         YahooStock gets stock data from Yahoo and creates testing and training sets
@@ -56,6 +55,19 @@ class YahooStock:
         self.data_frame = self.data_frame[:, 0:_col_num]
         return self.data_frame
 
+    def _load_ticker(self):
+        yf = YahooFinancials(self.ticker)
+        self.text_string = yf.get_historical_price_data(start_date='1900-01-01', end_date='2022-06-02',
+                                                        time_interval='daily')
+        print('WARNING: Loaded data directly from yahoo: ' + self.ticker)
+        self.text_string = json.dumps(self.text_string)
+        text_file = open(BASE_PATH + self.ticker + '.json', 'w')
+        text_file.write(self.text_string)
+        text_file.close()
+
+    def _reset_data_frame(self):
+        self.data_frame = self.price_frame
+
     @staticmethod
     def get_classification(data_column, threshold_value=0, lagging_average=None):
         """Returns 1.0 in a column when column_data exceeds the threshold_value, if the value is below threshold_value
@@ -95,11 +107,11 @@ class YahooStock:
         return temp_v
 
     @staticmethod
-    def get_test_train_split(_data, _split_col=2, _batch_size=4, _train_ratio=0.6, _target_column_start=3):
+    def get_test_train_split(_data, _train_start_col=2, _batch_size=4, _train_ratio=0.6, _target_column_start=3):
         """
 
         :param _data: a pandas.DataFrame with columns to be split for training and testing sets
-        :param _split_col: the column in the dataframe to divide between x and y values
+        :param _train_start_col: the column in the dataframe to divide between x and y values
         :param _batch_size: the number of samples you want in each batch.  This number is used to determine whether rows need to be truncated to make each batch an equal size.
         :param _train_ratio: the percentage of items for training and testing sets
         :param _target_column_start: the index, which starts at 0, of the column that contains the output result.  note that this may be changed to allow a range of output columns
@@ -107,7 +119,7 @@ class YahooStock:
         :return: _x_train, _x_target, _y_train, _y_target
         """
         # _batch_size and _train_ratio must be float types
-        split_col = int(_split_col)
+        split_col = int(_train_start_col)
         batch_size = int(_batch_size)
 
         num_rows, num_cols = _data.shape
@@ -122,30 +134,22 @@ class YahooStock:
         num_y = num_rows - num_x
         extra_rows_y = num_y % _batch_size
         num_y = num_y - extra_rows_y
-        x_training = _data.iloc[0:num_x, 0:_split_col]
+        x_training = _data.iloc[0:num_x, 0:_train_start_col]
         x_target = _data.iloc[0:num_x, _target_column_start:_target_column_start+1]
-        y_training = _data.iloc[num_x:(num_x + num_y), 0:_split_col]
+        y_training = _data.iloc[num_x:(num_x + num_y), 0:_train_start_col]
         y_target = _data.iloc[num_x:(num_x + num_y), _target_column_start:_target_column_start+1]
         return x_training, y_training, x_target, y_target  # , _x_target, _y_target
-
-    def _load_ticker(self):
-        yf = YahooFinancials(self.ticker)
-        self.text_string = yf.get_historical_price_data(start_date='1900-01-01', end_date='2022-06-02',
-                                                        time_interval='daily')
-        print('WARNING: Loaded data directly from yahoo: ' + self.ticker)
-        self.text_string = json.dumps(self.text_string)
-        text_file = open(BASE_PATH + self.ticker + '.json', 'w')
-        text_file.write(self.text_string)
-        text_file.close()
-
-    def _reset_data_frame(self):
-        self.data_frame = self.price_frame
-
 
 
 if __name__ == '__main__':
     stock_object = YahooStock(tickerX)
     col_5 = stock_object.get_price_data(4)
     classification = stock_object.get_classification_greater_prior(2, 4)
-    x_train, y_train, x_target, y_target = stock_object.get_test_train_split(stock_object.price_frame, 3, 6, .87, _target_column_start=5)
-    print('Finished!' + tickerX)
+    x_train, y_train, x_target, y_target = stock_object.get_test_train_split(
+        _data=stock_object.price_frame,
+        _train_start_col=3,
+        _batch_size=6,
+        _train_ratio=.87,
+        _target_column_start=5
+    )
+    print('Finished YahooStock: ' + tickerX)

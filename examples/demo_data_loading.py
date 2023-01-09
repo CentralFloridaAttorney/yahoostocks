@@ -64,38 +64,12 @@ class TrainerMain:
 
         self.stock_price_data = min_max.fit_transform(stock_item.data_frame)
         self.x_train, self.x_target, self.y_train, self.y_target = stock_item.get_test_train_split(
-            self.stock_price_data, 2, 3, .6)
-        self.x_train = torch.from_numpy(self.x_train)
-        self.y_train = torch.from_numpy(self.y_train)
-        self.x_target = torch.from_numpy(self.x_target)
-        self.y_target = torch.from_numpy(self.y_target)
-
-        # init the optimizer
-        parser = argparse.ArgumentParser()
-        parser.add_argument('--steps', type=int, default=25, help='steps to run')
-        self.opt = parser.parse_args()
-
-        # set random seed to 0
-        numpy.random.seed(0)
-        torch.manual_seed(0)
-        self.criterion = nn.MSELoss(reduction='mean')
-
-        self.seq = Sequence()
-        self.seq.double()
-        self.optimizer = optim.LBFGS(self.seq.parameters(), lr=0.0001)
-
-    def __init__OLD(self):
-        # init the dataset
-        self.this_ticker = 'MSFT'
-        stock_item = YahooStock(self.this_ticker)
-        stock_item._drop_column(5)
-        classification = stock_item.get_classification_greater_prior(5, 2)
-        self.stock_price_data = stock_item._add_column(classification).astype(dtype=float)
-        # try to scale data
-        min_max = MinMaxScaler()
-        self.stock_price_data = min_max.fit_transform(self.stock_price_data)
-        self.x_train, self.x_target, self.y_train, self.y_target = stock_item.get_test_train_split(
-            self.stock_price_data, 5, 4.0, .6)
+            _data=self.stock_price_data,
+            _train_start_col=2,
+            _batch_size=3,
+            _train_ratio=.6,
+            _target_column_start=3
+        )
         self.x_train = torch.from_numpy(self.x_train)
         self.y_train = torch.from_numpy(self.y_train)
         self.x_target = torch.from_numpy(self.x_target)
