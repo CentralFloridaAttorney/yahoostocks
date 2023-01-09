@@ -30,10 +30,15 @@ class Converter:
 
 if __name__ == '__main__':
     stock_data = YahooStock(TICKER)
+    x_train, y_train, x_target, y_target = stock_data.get_test_train_split(stock_data.price_frame, 3, 6, .87, 5)
+
+
+
+
     converter = Converter()
-    stock_markdown = converter.pandas_df_to_markdown_table(stock_data.price_frame)
+    stock_markdown = converter.pandas_df_to_markdown_table(x_target)
     markdown_text = stock_markdown.data
-    markdown_file = open(BASE_PATH+TICKER+'.md', 'w+')
+    markdown_file = open(BASE_PATH+TICKER+'_xtarget.md', 'w+')
     markdown_file.write(markdown_text)
     markdown_file.close()
     print('done!')
