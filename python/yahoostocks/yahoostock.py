@@ -147,5 +147,5 @@ if __name__ == '__main__':
     stock_object = YahooStock(tickerX)
     col_5 = stock_object.get_price_data(4)
     classification = stock_object.get_classification_greater_prior(2, 4)
-    x_train, y_train, x_target, y_target = stock_object.get_test_train_split(stock_object.price_frame, 3, 6, .87, 5)
+    x_train, y_train, x_target, y_target = stock_object.get_test_train_split(stock_object.price_frame, 3, 6, .87, _target_column_start=5)
     print('Finished!' + tickerX)
