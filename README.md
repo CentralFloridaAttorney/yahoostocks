@@ -14,7 +14,7 @@
             _target_column_start=5
         )
 
-_yahoostocks is not affiliated with the company Yahoo(exclamation) or Tesla_
+_yahoostock is not affiliated with the company Yahoo(exclamation) or Tesla_
 
 # tsla_stock.price_frame:
 
