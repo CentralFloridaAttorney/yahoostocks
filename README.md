@@ -1,11 +1,7 @@
-# yahoostocks
+# Why use yahoostock.py?
 
-When you create an instance of YahooStock, it will either load the symbol's data from your files or get it from Yahoo
+    Get Tesla's historical stock data: tsla_stock = YahooStock('TSLA')
 
-To create an instance with data for Microsoft: msft_stock = YahooStock('MSFT')
+    Create training and testing splits: x_train, y_train, x_target, y_target = tsla_stock.get_test_train_split(tsla_stock.price_frame, 3, 6, .87, 5)
 
-To create training and testing splits from the instance: x_train, y_train, x_target, y_target = msft_stock.get_test_train_split(msft_stock.price_frame, 3, 6, .87, 5)
-
-If anyone has any suggestions or requests then let me know!
-
-yahoostocks is not affiliated with the company Yahoo(exclamation)
+_yahoostocks is not affiliated with the company Yahoo(exclamation) or Tesla_
