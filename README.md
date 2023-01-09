@@ -20,7 +20,7 @@ _yahoostocks is not affiliated with the company Yahoo(exclamation) or Tesla_
 
 _TSLA data is not guaranteed to be accurate_
 
-## Create testing and training dataframes: x_train, y_train, x_target, y_target = tsla_stock.get_test_train_split(tsla_stock.price_frame, 3, 6, .87, 5)
+Create testing and training dataframes: x_train, y_train, x_target, y_target = tsla_stock.get_test_train_split(tsla_stock.price_frame, 3, 6, .87, 5)
 
 ### x_train:
 
