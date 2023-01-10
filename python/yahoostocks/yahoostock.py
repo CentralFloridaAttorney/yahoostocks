@@ -71,23 +71,12 @@ class YahooStock:
 
     @staticmethod
     def get_classification(data_column, threshold_value=0, lagging_average=None):
-        """Returns 1.0 in a column when column_data exceeds the threshold_value, if the value is below threshold_value
-        then 0.0 is added
+        """
+        :param data_column: a dataframe with a single column
+        :param threshold_value: value used to set minimum value for 1 to be the return value
+        :param lagging_average: depreciated
+        :return: Returns a dataframe with 1.0 in a column when column_data exceeds the threshold_value, if the value is below threshold_value then 0.0 is added
 
-        Parameters
-        ----------
-        data_column : DataFrame
-            The options column to be added to file_data
-        threshold_value : float
-            The minimum value for a true result
-
-        Returns
-        -------
-        list
-            file_data
-            :param data_column:
-            :param threshold_value:
-            :param lagging_average:
         """
         return Classifier().from_threshold(data_column, threshold_value)
 
@@ -98,7 +87,12 @@ class YahooStock:
         classified = numpy.where((_data > _data.shift(-_days_before)), 1.0, 0.0)
         return classified
 
-    def get_price_data(self, column_name):
+    def get_column(self, column_name):
+        """
+
+        :param column_name: the string name of the column (ex. 'Volume')
+        :return:
+        """
         try:
             temp_v = self.price_frame[column_name].iloc[:, ]
         except (ValueError, KeyError):
@@ -144,7 +138,7 @@ class YahooStock:
 
 if __name__ == '__main__':
     stock_object = YahooStock(tickerX)
-    col_5 = stock_object.get_price_data(4)
+    col_5 = stock_object.get_column(4)
     classification = stock_object.get_classification_greater_prior(2, 4)
     x_train, y_train, x_target, y_target = stock_object.get_test_train_split(_data=stock_object.price_frame,
                                                                              _train_end_col=3, _batch_size=6,
