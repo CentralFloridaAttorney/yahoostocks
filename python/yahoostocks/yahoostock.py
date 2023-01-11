@@ -5,10 +5,10 @@ import numpy
 import pandas
 import torchvision.transforms as transforms
 
-from python.yahoof.yahoofinance import YahooFinancials
+from python.yahoostocks.yahoofinance import YahooFinancials
 from python.yahoostocks.classifier import Classifier
 
-tickerX = 'NIO'
+tickerX = 'CVS'
 BASE_PATH = '../../data/stocks/'
 
 
