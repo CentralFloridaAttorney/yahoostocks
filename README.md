@@ -1,4 +1,4 @@
-# Why use yahoostock.py?
+# Why use yahoostocks?
 
     Get a stock's historical market data: 
 
