@@ -1,4 +1,4 @@
-# Why use yahoostock.py?
+# Why use yahoostocks?
 
     Get a stock's historical market data: 
 
@@ -6,7 +6,7 @@
 
     Create testing and training sets for machine learning: 
 
-        x_train, y_train, x_target, y_target = stock_object.get_test_train_split(
+        x_training, y_training, x_target, y_target = stock_object.get_test_train_split(
             _data=stock_object.price_frame,
             _train_end_col=3,
             _batch_size=6,

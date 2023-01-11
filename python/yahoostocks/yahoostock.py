@@ -3,12 +3,11 @@ import math
 
 import numpy
 import pandas
-import torchvision.transforms as transforms
 
-from python.yahoof.yahoofinance import YahooFinancials
+from python.yahoostocks.yahoofinance import YahooFinancials
 from python.yahoostocks.classifier import Classifier
 
-tickerX = 'NIO'
+tickerX = 'CVS'
 BASE_PATH = '../../data/stocks/'
 
 
@@ -19,13 +18,6 @@ class YahooStock:
 
         :param init_ticker: the ticker symbol of a publicly traded stock
         """
-        self.transform = transforms.Compose(
-            [transforms.ToTensor(),
-             transforms.Normalize((0.5,), (0.5,))])
-        self.training_set = numpy.empty_like
-        self.validation_set = numpy.empty_like
-        self.validation_loader = None
-        self.training_loader = None
         self.ticker = init_ticker
         try:
             # 'data/stocks/AMD.json'
@@ -70,36 +62,43 @@ class YahooStock:
         self.data_frame = self.price_frame
 
     @staticmethod
-    def get_classification(data_column, threshold_value=0, lagging_average=None):
-        """
-        :param data_column: a dataframe with a single column
-        :param threshold_value: value used to set minimum value for 1 to be the return value
-        :param lagging_average: depreciated
-        :return: Returns a dataframe with 1.0 in a column when column_data exceeds the threshold_value, if the value is below threshold_value then 0.0 is added
-
-        """
-        return Classifier().from_threshold(data_column, threshold_value)
+    def from_threshold(_numpy_column, _threshold_value=1):
+        cols_above_threshold = []
+        for x in _numpy_column:
+            if x > _threshold_value:
+                cols_above_threshold.append(1.0)
+            else:
+                cols_above_threshold.append(0.0)
+        return pandas.DataFrame(cols_above_threshold)
 
     def get_classification_greater_prior(self, _col_num, _days_before):
+        """
+        This method uses the data stored in self.price_frame
+        :param _col_num:
+        :param _days_before:
+        :return:
+        """
         _data = pandas.DataFrame(self.price_frame).to_numpy()
         _data = _data[:, _col_num]
         _data = pandas.DataFrame(_data)
         classified = numpy.where((_data > _data.shift(-_days_before)), 1.0, 0.0)
-        return classified
+        return pandas.DataFrame(classified)
 
-    def get_column(self, column_name):
+    def get_column(self, _col_name):
         """
 
         :param column_name: the string name of the column (ex. 'Volume')
         :return:
         """
         try:
-            temp_v = self.price_frame[column_name].iloc[:, ]
+            temp_v = self.price_frame[_col_name].iloc[:, ]
         except (ValueError, KeyError):
             temp_v = pandas.DataFrame(self.price_frame).to_numpy()
-            temp_v = temp_v[:, column_name]
+            temp_v = temp_v[:, _col_name]
             temp_v = pandas.DataFrame(temp_v).to_numpy()
-        return temp_v
+        new_dataframe = pandas.DataFrame(temp_v)
+        new_dataframe.columns = [_col_name]
+        return new_dataframe
 
     @staticmethod
     def get_test_train_split(_data, _train_end_col=2, _batch_size=4, _train_ratio=0.6, _target_column_start=3):
@@ -111,7 +110,7 @@ class YahooStock:
         :param _train_ratio: the percentage of items for training and testing sets
         :param _target_column_start: the index, which starts at 0, of the column that contains the output result.  note that this may be changed to allow a range of output columns
 
-        :return: _x_train, _x_target, _y_train, _y_target
+        :return: x_training, y_training, x_target, y_target
         """
         # _batch_size and _train_ratio must be float types
         split_col = int(_train_end_col)
