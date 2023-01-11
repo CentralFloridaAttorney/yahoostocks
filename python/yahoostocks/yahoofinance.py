@@ -33,16 +33,6 @@ List of Included Functions:
    - start_date should be entered in the 'YYYY-MM-DD' format. First day that financial options will be pulled.
    - end_date should be entered in the 'YYYY-MM-DD' format. Last day that financial options will be pulled.
    - time_interval can be either 'daily', 'weekly', or 'monthly'. Parameter determines the time period interval.
-
-Usage Examples:
-from yahoofinancials import YahooFinancials
-#tickers = 'AAPL'
-#or
-tickers = ['AAPL', 'WFC', 'F', 'JPY=X', 'XRP-USD', 'GC=F']
-yahoo_financials = YahooFinancials(tickers)
-balance_sheet_data = yahoo_financials.get_financial_stmts('quarterly', 'balance')
-earnings_data = yahoo_financials.get_stock_earnings_data()
-historical_prices = yahoo_financials.get_historical_price_data('2015-01-15', '2017-10-15', 'weekly')
 """
 
 import calendar
@@ -582,6 +572,32 @@ class YahooFinanceETL(object):
 # Class containing methods to create stock options extracts
 class YahooFinancials(YahooFinanceETL):
 
+    def _financial_statement_data(self, stmt_type, stmt_code, field_name, freq):
+        re_data = self.get_financial_stmts(freq, stmt_type)[stmt_code]
+        if isinstance(self.ticker, str):
+            try:
+                date_key = re_data[self.ticker][0].keys()[0]
+            except (IndexError, AttributeError, TypeError):
+                date_key = list(re_data[self.ticker][0])[0]
+            data = re_data[self.ticker][0][date_key][field_name]
+        else:
+            data = {}
+            for tick in self.ticker:
+                try:
+                    date_key = re_data[tick][0].keys()[0]
+                except:
+                    try:
+                        date_key = list(re_data[tick][0].keys())[0]
+                    except:
+                        date_key = None
+                if date_key is not None:
+                    sub_data = re_data[tick][0][date_key][field_name]
+                    data.update({tick: sub_data})
+                else:
+                    data.update({tick: None})
+        return data
+
+    # Public method to get daily dividend options
     # Private method that handles financial statement extraction
     def _run_financial_stmt(self, statement_type, report_num, reformat):
         report_name = self.YAHOO_FINANCIAL_TYPES[statement_type][report_num]
@@ -593,64 +609,6 @@ class YahooFinancials(YahooFinanceETL):
         return data
 
     # Public Method for the user to get financial statement options
-    def get_financial_stmts(self, frequency, statement_type, reformat=True):
-        report_num = self.get_report_type(frequency)
-        if isinstance(statement_type, str):
-            data = self._run_financial_stmt(statement_type, report_num, reformat)
-        else:
-            data = {}
-            for stmt_type in statement_type:
-                re_data = self._run_financial_stmt(stmt_type, report_num, reformat)
-                data.update(re_data)
-        return data
-
-    # Public Method for the user to get stock price options
-    def get_stock_price_data(self, reformat=True):
-        if reformat:
-            return self.get_clean_data(self.get_stock_tech_data('price'), 'price')
-        else:
-            return self.get_stock_tech_data('price')
-
-    # Public Method for the user to return key-statistics options
-    def get_key_statistics_data(self, reformat=True):
-        if reformat:
-            return self.get_clean_data(self.get_stock_tech_data('defaultKeyStatistics'), 'defaultKeyStatistics')
-        else:
-            return self.get_stock_tech_data('defaultKeyStatistics')
-
-    # Public Method for the user to get stock earnings options
-    def get_stock_earnings_data(self, reformat=True):
-        if reformat:
-            return self.get_clean_data(self.get_stock_tech_data('earnings'), 'earnings')
-        else:
-            return self.get_stock_tech_data('earnings')
-
-    # Public Method for the user to get stock summary options
-    def get_summary_data(self, reformat=True):
-        if reformat:
-            return self.get_clean_data(self.get_stock_tech_data('summaryDetail'), 'summaryDetail')
-        else:
-            return self.get_stock_tech_data('summaryDetail')
-
-    # Public Method for the user to get the yahoo summary url
-    def get_stock_summary_url(self):
-        if isinstance(self.ticker, str):
-            return self._BASE_YAHOO_URL + self.ticker
-        return {t: self._BASE_YAHOO_URL + t for t in self.ticker}
-
-    # Public Method for the user to get stock quote options
-    def get_stock_quote_type_data(self):
-        return self.get_stock_tech_data('quoteType')
-
-    # Public Method for user to get historical price options with
-    def get_historical_price_data(self, start_date, end_date, time_interval):
-        interval_code = self.get_time_code(time_interval)
-        start = self.format_date(start_date)
-        end = self.format_date(end_date)
-        hist_obj = {'start': start, 'end': end, 'interval': interval_code}
-        return self.get_stock_data('history', hist_obj=hist_obj)
-
-    # Private Method for Functions needing stock_price_data
     def _stock_price_data(self, data_field):
         if isinstance(self.ticker, str):
             if self.get_stock_price_data()[self.ticker] is None:
@@ -681,163 +639,62 @@ class YahooFinancials(YahooFinanceETL):
             return ret_obj
 
     # Private Method for Functions needing financial statement options
-    def _financial_statement_data(self, stmt_type, stmt_code, field_name, freq):
-        re_data = self.get_financial_stmts(freq, stmt_type)[stmt_code]
-        if isinstance(self.ticker, str):
-            try:
-                date_key = re_data[self.ticker][0].keys()[0]
-            except (IndexError, AttributeError, TypeError):
-                date_key = list(re_data[self.ticker][0])[0]
-            data = re_data[self.ticker][0][date_key][field_name]
-        else:
-            data = {}
-            for tick in self.ticker:
-                try:
-                    date_key = re_data[tick][0].keys()[0]
-                except:
-                    try:
-                        date_key = list(re_data[tick][0].keys())[0]
-                    except:
-                        date_key = None
-                if date_key is not None:
-                    sub_data = re_data[tick][0][date_key][field_name]
-                    data.update({tick: sub_data})
-                else:
-                    data.update({tick: None})
-        return data
+    def get_200day_moving_avg(self):
+        return self._stock_summary_data('twoHundredDayAverage')
 
-    # Public method to get daily dividend options
-    def get_daily_dividend_data(self, start_date, end_date):
-        start = self.format_date(start_date)
-        end = self.format_date(end_date)
-        return self.get_stock_dividend_data(start, end, 'daily')
+    def get_50day_moving_avg(self):
+        return self._stock_summary_data('fiftyDayAverage')
 
-    # Public Price Data Methods
-    def get_current_price(self):
-        return self._stock_price_data('regularMarketPrice')
+    def get_annual_avg_div_rate(self):
+        return self._stock_summary_data('trailingAnnualDividendRate')
 
+    def get_annual_avg_div_yield(self):
+        return self._stock_summary_data('trailingAnnualDividendYield')
+
+    def get_beta(self):
+        return self._stock_summary_data('beta')
+
+    def get_book_value(self):
+        return self._financial_statement_data('balance', 'balanceSheetHistoryQuarterly',
+                                              'totalStockholderEquity', 'quarterly')
+
+    def get_cost_of_revenue(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory', 'costOfRevenue', 'annual')
+
+    def get_currency(self):
+        return self._stock_price_data('currency')
+
+    # Public Summary Data Methods
     def get_current_change(self):
         return self._stock_price_data('regularMarketChange')
 
     def get_current_percent_change(self):
         return self._stock_price_data('regularMarketChangePercent')
 
+    def get_current_price(self):
+        return self._stock_price_data('regularMarketPrice')
+
     def get_current_volume(self):
         return self._stock_price_data('regularMarketVolume')
 
-    def get_prev_close_price(self):
-        return self._stock_price_data('regularMarketPreviousClose')
+    def get_daily_dividend_data(self, start_date, end_date):
+        start = self.format_date(start_date)
+        end = self.format_date(end_date)
+        return self.get_stock_dividend_data(start, end, 'daily')
 
-    def get_open_price(self):
-        return self._stock_price_data('regularMarketOpen')
-
-    def get_ten_day_avg_daily_volume(self):
-        return self._stock_price_data('averageDailyVolume10Day')
-
-    def get_three_month_avg_daily_volume(self):
-        return self._stock_price_data('averageDailyVolume3Month')
-
-    def get_stock_exchange(self):
-        return self._stock_price_data('exchangeName')
-
-    def get_market_cap(self):
-        return self._stock_price_data('marketCap')
+    # Public Price Data Methods
+    def get_daily_high(self):
+        return self._stock_price_data('regularMarketDayHigh')
 
     def get_daily_low(self):
         return self._stock_price_data('regularMarketDayLow')
 
-    def get_daily_high(self):
-        return self._stock_price_data('regularMarketDayHigh')
-
-    def get_currency(self):
-        return self._stock_price_data('currency')
-
-    # Public Summary Data Methods
-    def get_yearly_high(self):
-        return self._stock_summary_data('fiftyTwoWeekHigh')
-
-    def get_yearly_low(self):
-        return self._stock_summary_data('fiftyTwoWeekLow')
+    def get_dividend_rate(self):
+        return self._stock_summary_data('dividendRate')
 
     def get_dividend_yield(self):
         return self._stock_summary_data('dividendYield')
 
-    def get_annual_avg_div_yield(self):
-        return self._stock_summary_data('trailingAnnualDividendYield')
-
-    def get_five_yr_avg_div_yield(self):
-        return self._stock_summary_data('fiveYearAvgDividendYield')
-
-    def get_dividend_rate(self):
-        return self._stock_summary_data('dividendRate')
-
-    def get_annual_avg_div_rate(self):
-        return self._stock_summary_data('trailingAnnualDividendRate')
-
-    def get_50day_moving_avg(self):
-        return self._stock_summary_data('fiftyDayAverage')
-
-    def get_200day_moving_avg(self):
-        return self._stock_summary_data('twoHundredDayAverage')
-
-    def get_beta(self):
-        return self._stock_summary_data('beta')
-
-    def get_payout_ratio(self):
-        return self._stock_summary_data('payoutRatio')
-
-    def get_pe_ratio(self):
-        return self._stock_summary_data('trailingPE')
-
-    def get_price_to_sales(self):
-        return self._stock_summary_data('priceToSalesTrailing12Months')
-
-    def get_exdividend_date(self):
-        return self._stock_summary_data('exDividendDate')
-
-    # Financial Statement Data Methods
-    def get_book_value(self):
-        return self._financial_statement_data('balance', 'balanceSheetHistoryQuarterly',
-                                              'totalStockholderEquity', 'quarterly')
-
-    def get_ebit(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory', 'ebit', 'annual')
-
-    def get_net_income(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory', 'netIncome', 'annual')
-
-    def get_interest_expense(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory', 'interestExpense', 'annual')
-
-    def get_operating_income(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory', 'operatingIncome', 'annual')
-
-    def get_total_operating_expense(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory', 'totalOperatingExpenses', 'annual')
-
-    def get_total_revenue(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory', 'totalRevenue', 'annual')
-
-    def get_cost_of_revenue(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory', 'costOfRevenue', 'annual')
-
-    def get_income_before_tax(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory', 'incomeBeforeTax', 'annual')
-
-    def get_income_tax_expense(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory', 'incomeTaxExpense', 'annual')
-
-    def get_gross_profit(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory', 'grossProfit', 'annual')
-
-    def get_net_income_from_continuing_ops(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory',
-                                              'netIncomeFromContinuingOps', 'annual')
-
-    def get_research_and_development(self):
-        return self._financial_statement_data('income', 'incomeStatementHistory', 'researchDevelopment', 'annual')
-
-    # Calculated Financial Methods
     def get_earnings_per_share(self):
         price_data = self.get_current_price()
         pe_ratio = self.get_pe_ratio()
@@ -854,6 +711,65 @@ class YahooFinancials(YahooFinanceETL):
                 else:
                     ret_obj.update({tick: None})
             return ret_obj
+
+    def get_ebit(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory', 'ebit', 'annual')
+
+    def get_exdividend_date(self):
+        return self._stock_summary_data('exDividendDate')
+
+    # Financial Statement Data Methods
+    def get_financial_stmts(self, frequency, statement_type, reformat=True):
+        report_num = self.get_report_type(frequency)
+        if isinstance(statement_type, str):
+            data = self._run_financial_stmt(statement_type, report_num, reformat)
+        else:
+            data = {}
+            for stmt_type in statement_type:
+                re_data = self._run_financial_stmt(stmt_type, report_num, reformat)
+                data.update(re_data)
+        return data
+
+    # Public Method for the user to get stock price options
+    def get_five_yr_avg_div_yield(self):
+        return self._stock_summary_data('fiveYearAvgDividendYield')
+
+    def get_gross_profit(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory', 'grossProfit', 'annual')
+
+    def get_historical_price_data(self, start_date, end_date, time_interval):
+        interval_code = self.get_time_code(time_interval)
+        start = self.format_date(start_date)
+        end = self.format_date(end_date)
+        hist_obj = {'start': start, 'end': end, 'interval': interval_code}
+        return self.get_stock_data('history', hist_obj=hist_obj)
+
+    # Private Method for Functions needing stock_price_data
+    def get_income_before_tax(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory', 'incomeBeforeTax', 'annual')
+
+    def get_income_tax_expense(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory', 'incomeTaxExpense', 'annual')
+
+    def get_interest_expense(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory', 'interestExpense', 'annual')
+
+    def get_key_statistics_data(self, reformat=True):
+        if reformat:
+            return self.get_clean_data(self.get_stock_tech_data('defaultKeyStatistics'), 'defaultKeyStatistics')
+        else:
+            return self.get_stock_tech_data('defaultKeyStatistics')
+
+    # Public Method for the user to get stock earnings options
+    def get_market_cap(self):
+        return self._stock_price_data('marketCap')
+
+    def get_net_income(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory', 'netIncome', 'annual')
+
+    def get_net_income_from_continuing_ops(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory',
+                                              'netIncomeFromContinuingOps', 'annual')
 
     def get_num_shares_outstanding(self, price_type='current'):
         today_low = self._stock_summary_data('dayHigh')
@@ -894,3 +810,77 @@ class YahooFinancials(YahooFinanceETL):
                 else:
                     ret_obj.update({tick: None})
             return ret_obj
+    def get_open_price(self):
+        return self._stock_price_data('regularMarketOpen')
+
+    def get_operating_income(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory', 'operatingIncome', 'annual')
+
+    def get_payout_ratio(self):
+        return self._stock_summary_data('payoutRatio')
+
+    def get_pe_ratio(self):
+        return self._stock_summary_data('trailingPE')
+
+    def get_prev_close_price(self):
+        return self._stock_price_data('regularMarketPreviousClose')
+
+    def get_price_to_sales(self):
+        return self._stock_summary_data('priceToSalesTrailing12Months')
+
+    def get_research_and_development(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory', 'researchDevelopment', 'annual')
+
+    # Calculated Financial Methods
+    def get_stock_earnings_data(self, reformat=True):
+        if reformat:
+            return self.get_clean_data(self.get_stock_tech_data('earnings'), 'earnings')
+        else:
+            return self.get_stock_tech_data('earnings')
+
+    # Public Method for the user to get stock summary options
+    def get_stock_exchange(self):
+        return self._stock_price_data('exchangeName')
+
+    def get_stock_price_data(self, reformat=True):
+        if reformat:
+            return self.get_clean_data(self.get_stock_tech_data('price'), 'price')
+        else:
+            return self.get_stock_tech_data('price')
+
+    # Public Method for the user to return key-statistics options
+    def get_stock_quote_type_data(self):
+        return self.get_stock_tech_data('quoteType')
+
+    # Public Method for user to get historical price options with
+    def get_stock_summary_url(self):
+        if isinstance(self.ticker, str):
+            return self._BASE_YAHOO_URL + self.ticker
+        return {t: self._BASE_YAHOO_URL + t for t in self.ticker}
+
+    # Public Method for the user to get stock quote options
+    def get_summary_data(self, reformat=True):
+        if reformat:
+            return self.get_clean_data(self.get_stock_tech_data('summaryDetail'), 'summaryDetail')
+        else:
+            return self.get_stock_tech_data('summaryDetail')
+
+    # Public Method for the user to get the yahoo summary url
+    def get_ten_day_avg_daily_volume(self):
+        return self._stock_price_data('averageDailyVolume10Day')
+
+    def get_three_month_avg_daily_volume(self):
+        return self._stock_price_data('averageDailyVolume3Month')
+
+    def get_total_operating_expense(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory', 'totalOperatingExpenses', 'annual')
+
+    def get_total_revenue(self):
+        return self._financial_statement_data('income', 'incomeStatementHistory', 'totalRevenue', 'annual')
+
+    def get_yearly_high(self):
+        return self._stock_summary_data('fiftyTwoWeekHigh')
+
+    def get_yearly_low(self):
+        return self._stock_summary_data('fiftyTwoWeekLow')
+
