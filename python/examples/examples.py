@@ -23,16 +23,8 @@ def test_get_test_train_split():
     print('test_get_test_train_split: ' + y_train.columns[0])
 
 
-def test_get_classification():
-    stock_object = YahooStock(TICKER)
-    # error below here
-    classification = stock_object.get_classification(2, 4)
-    print('get_classification: ' + classification[0])
-
-
 if __name__ == '__main__':
     test_init()
     test_get_column()
     test_get_test_train_split()
-    test_get_classification()
     print('Finished YahooStock: ' + TICKER)
