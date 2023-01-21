@@ -7,7 +7,7 @@ import pandas
 from python.yahoostocks.yahoofinance import YahooFinancials
 from python.yahoostocks.classifier import Classifier
 
-tickerX = 'CVS'
+tickerX = 'F'
 BASE_PATH = '../../data/stocks/'
 
 
