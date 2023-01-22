@@ -12,7 +12,7 @@ BASE_PATH = '../../data/stocks/'
 
 
 class YahooStock:
-    def __init__(self, init_ticker="F"):
+    def __init__(self, init_ticker="F", _stock_dict=None):
         """
         YahooStock gets stock data from Yahoo and creates testing and training sets
 

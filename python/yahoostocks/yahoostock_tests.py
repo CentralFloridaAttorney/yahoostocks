@@ -7,6 +7,14 @@ def test_init():
     print('test_init: ' + stock_item.ticker)
 
 
+def test_init_dict(_stock_dict):
+    stock_array = []
+    for ticker in _stock_dict:
+        this_stock = YahooStock(ticker)
+        stock_array.append(this_stock)
+    print('test_init_array number of stocks: ' + str(len(stock_array)))
+
+
 def test_get_column():
     stock_item = YahooStock(TICKER)
     columns = stock_item.price_frame.columns
@@ -31,6 +39,20 @@ def test_get_classification_greater_prior():
 
 if __name__ == '__main__':
     test_init()
+    stock_dict = {
+        "BTC-USD": "Bitcoin",
+        "ETH-USD": "Ethereum",
+        "USDT-USD": "Tether",
+        "SNY": "Sanofi-Aventis",
+        "NVS": "Novartis",
+        "TSLA": "Tesla",
+        "AXP": "American express",
+        "BLK": "Blackrock",
+        "BABA": "Alibaba",
+        "NVDA": "Nvidia",
+        "PYPL": "Paypal"
+    }
+    test_init_dict(stock_dict)
     test_get_column()
     test_get_test_train_split()
     test_get_classification_greater_prior()
