@@ -1,7 +1,7 @@
 import pandas as pd
 from tabulate import tabulate
 
-from python.yahoostocks.yahoostock import YahooStock
+from python.yahoostocks.yahoostocks import YahooStocks
 
 BASE_PATH = '../../data/md/'
 TICKER = 'TSLA'
@@ -31,7 +31,7 @@ class Converter:
 
 
 if __name__ == '__main__':
-    stock_data = YahooStock(TICKER)
+    stock_data = YahooStocks(TICKER)
     x_train, y_train, x_target, y_target = stock_data.get_test_train_split(_data=stock_data.price_frame,
                                                                            _train_end_col=3, _batch_size=6,
                                                                            _train_ratio=.87, _target_column_start=5)

@@ -9,16 +9,38 @@ from python.yahoostocks.classifier import Classifier
 
 tickerX = 'F'
 BASE_PATH = '../../data/stocks/'
+symbol_dict = {
+    "BTC-USD": "Bitcoin",
+    "ETH-USD": "Ethereum",
+    "USDT-USD": "Tether",
+    "SNY": "Sanofi-Aventis",
+    "NVS": "Novartis",
+    "TSLA": "Tesla",
+    "AXP": "American express",
+    "BLK": "Blackrock",
+    "BABA": "Alibaba",
+    "NVDA": "Nvidia",
+    "PYPL": "Paypal"
+}
 
 
-class YahooStock:
+class YahooStocks:
     def __init__(self, init_ticker="F", _stock_dict=None):
         """
         YahooStock gets stock data from Yahoo and creates testing and training sets
 
         :param init_ticker: the ticker symbol of a publicly traded stock
         """
+        self.these_prices = []
+
         self.ticker = init_ticker
+        if _stock_dict is not None:
+            self.stock_dict = _stock_dict
+            for ticker in self.stock_dict:
+                this_stock = YahooStocks(ticker)
+                this_price_frame = this_stock.price_frame
+                self.these_prices.append(this_price_frame)
+
         try:
             # 'data/stocks/AMD.json'
             text_file = open(BASE_PATH + self.ticker + '.json', 'r')
@@ -101,7 +123,7 @@ class YahooStock:
         return new_dataframe
 
     @staticmethod
-    def get_test_train_split(_data, _train_end_col=2, _batch_size=4, _train_ratio=0.6, _target_column_start=3):
+    def get_test_train_split(_data, _train_start_col=1, _train_end_col=2, _batch_size=4, _train_ratio=0.6, _target_column_start=3, _target_col_end=3):
         """
 
         :param _data: a pandas.DataFrame with columns to be split for training and testing sets
@@ -128,18 +150,19 @@ class YahooStock:
         num_y = num_rows - num_x
         extra_rows_y = num_y % _batch_size
         num_y = num_y - extra_rows_y
-        x_training = _data.iloc[0:num_x, 0:_train_end_col]
-        x_target = _data.iloc[0:num_x, _target_column_start:_target_column_start + 1]
-        y_training = _data.iloc[num_x:(num_x + num_y), 0:_train_end_col]
-        y_target = _data.iloc[num_x:(num_x + num_y), _target_column_start:_target_column_start + 1]
+        x_training = _data.iloc[0:num_x, _train_start_col:_train_end_col]
+        x_target = _data.iloc[0:num_x, _target_column_start:_target_col_end]
+        y_training = _data.iloc[num_x:(num_x + num_y), _train_start_col:_train_end_col]
+        y_target = _data.iloc[num_x:(num_x + num_y), _target_column_start:_target_col_end]
         return x_training, y_training, x_target, y_target  # , _x_target, _y_target
 
 
 if __name__ == '__main__':
-    stock_object = YahooStock(tickerX)
+    stock_object = YahooStocks(tickerX)
     col_5 = stock_object.get_column(4)
     classification = stock_object.get_classification_greater_prior(2, 4)
     x_train, y_train, x_target, y_target = stock_object.get_test_train_split(_data=stock_object.price_frame,
                                                                              _train_end_col=3, _batch_size=6,
                                                                              _train_ratio=.87, _target_column_start=5)
+    stock_objects = YahooStocks(symbol_dict)
     print('Finished YahooStock: ' + tickerX)
