@@ -254,7 +254,7 @@ class YahooFinanceETL(object):
             cleaned_dict.update(dict_ent)
         return cleaned_dict
 
-    # Private Static Method to ensure ticker is URL encoded
+    # Private Static Method to ensure ticker_symbol is URL encoded
     @staticmethod
     def _encode_ticker(ticker_str):
         encoded_ticker = ticker_str.replace('=', '%3D')

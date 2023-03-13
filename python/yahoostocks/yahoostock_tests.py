@@ -4,7 +4,7 @@ TICKER = 'GM'
 
 def test_init():
     stock_item = YahooStocks(TICKER)
-    print('test_init: ' + stock_item.ticker)
+    print('test_init: ' + stock_item.ticker_symbol)
 
 
 def test_init_dict(_stock_dict):
