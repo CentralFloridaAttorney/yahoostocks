@@ -99,6 +99,7 @@ quotes = []
 #     quotes.append(pd.read_csv(url.format(symbol)))
 
 stock_ticker_dict = {
+    "SIVB": "Silicon Valley Bank",
     "WFC": "Wells Fargo",
     "JPM": "JPMorgan Chase",
     "AIG": "AIG",
