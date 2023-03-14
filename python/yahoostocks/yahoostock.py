@@ -4,9 +4,14 @@ import os
 
 import numpy
 import pandas
+import pkg_resources
+from pkg_resources import resource_listdir
 
 from python.yahoostocks.yahoofinance import YahooFinancials
 from python.yahoostocks.classifier import Classifier
+
+# BASE_PATH = '../../data/stocks/'
+#BASE_PATH = os.path.dirname(__file__)
 
 symbol_dict = {
     "BTC-USD": "Bitcoin",
@@ -23,26 +28,28 @@ symbol_dict = {
 }
 
 
-class YahooStocks:
-    def __init__(self, ticker_symbol="F", _stock_dict=None):
+class YahooStock:
+    def __init__(self, init_ticker="F", _stock_dict=None):
         """
         YahooStock gets stock data from Yahoo and creates testing and training sets
 
-        :param ticker_symbol: the ticker_symbol symbol of a publicly traded stock
+        :param init_ticker: the ticker symbol of a publicly traded stock
         """
+        self.ticker_file_path = pkg_resources.resource_filename("data", "stocks/" +init_ticker + ".json")
+
         self.these_prices = []
-        self.BASE_PATH = str(os.path.dirname(__file__)).rstrip("yahoostocks/python")+"/yahoostocks/data/"
-        self.ticker_symbol = ticker_symbol
+
+        self.ticker = init_ticker
         if _stock_dict is not None:
             self.stock_dict = _stock_dict
             for ticker in self.stock_dict:
-                this_stock = YahooStocks(ticker)
+                this_stock = YahooStock(ticker)
                 this_price_frame = this_stock.price_frame
                 self.these_prices.append(this_price_frame)
 
         try:
             # 'data/stocks/AMD.json'
-            text_file = open(self.BASE_PATH + self.ticker_symbol + '.json', 'r')
+            text_file = open(self.ticker_file_path, 'r')
             self.text_string = text_file.read()
             text_file.close()
         except FileNotFoundError:
@@ -52,7 +59,7 @@ class YahooStocks:
 
         self.text_string = self.text_string.replace('\n', '')
         self.json_data = json.loads(self.text_string)
-        prices_a = self.json_data[self.ticker_symbol]['prices']
+        prices_a = self.json_data[self.ticker]['prices']
         these_prices = []
         for price in prices_a:
             these_prices.append(price)
@@ -70,12 +77,12 @@ class YahooStocks:
         return self.data_frame
 
     def _load_ticker(self):
-        yf = YahooFinancials(self.ticker_symbol)
+        yf = YahooFinancials(self.ticker)
         self.text_string = yf.get_historical_price_data(start_date='1900-01-01', end_date='2022-06-02',
                                                         time_interval='daily')
-        print('WARNING: Loaded data directly from yahoo: ' + self.ticker_symbol)
+        print('WARNING: Loaded data directly from yahoo: ' + self.ticker)
         self.text_string = json.dumps(self.text_string)
-        text_file = open(self.BASE_PATH + self.ticker_symbol + '.json', 'w')
+        text_file = open(self.ticker_file_path, 'w')
         text_file.write(self.text_string)
         text_file.close()
 
@@ -157,12 +164,12 @@ class YahooStocks:
 
 
 if __name__ == '__main__':
-    TICKER = "RTN"
-    stock_object = YahooStocks(TICKER)
+    TICKER = "MMM"
+    stock_object = YahooStock(TICKER)
     col_5 = stock_object.get_column(4)
     classification = stock_object.get_classification_greater_prior(2, 4)
     x_train, y_train, x_target, y_target = stock_object.get_test_train_split(_data=stock_object.price_frame,
                                                                              _train_end_col=3, _batch_size=6,
                                                                              _train_ratio=.87, _target_column_start=5)
-    stock_objects = YahooStocks(_stock_dict=symbol_dict)
+    # stock_objects = YahooStock(symbol_dict)
     print('Finished YahooStock: ' + TICKER)

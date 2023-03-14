@@ -1,3 +1,6 @@
+# Explanation of what the code does
+This module uses publicly available data from the yahoo finance api and creates training sets to be used by the neural network
+
 # Why use yahoostocks?
 
     Get a stock's historical market data: 

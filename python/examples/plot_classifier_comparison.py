@@ -42,7 +42,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.inspection import DecisionBoundaryDisplay
 
-from python.yahoostocks.yahoostocks import YahooStocks
+from python.yahoostocks.yahoostock import YahooStock
 
 names = [
     "Nearest Neighbors",
@@ -298,7 +298,7 @@ symbols, names = np.array(sorted(symbol_dict.items())).T
 quotes = []
 
 for symbol in symbols:
-    this_stock = YahooStocks(symbol)
+    this_stock = YahooStock(symbol)
     these_prices = this_stock.price_frame.iloc[-30:]
     these_prices.fillna(0.0)
     x_train, x_target, y_train, y_target = this_stock.get_test_train_split(_data=these_prices,
