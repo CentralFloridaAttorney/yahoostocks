@@ -29,7 +29,6 @@ import pandas as pd
 from python.yahoostocks.yahoostock import YahooStock
 
 symbol_dict = {
-    "TOT": "Total",
     "XOM": "Exxon",
     "CVX": "Chevron",
     "COP": "ConocoPhillips",
@@ -88,7 +87,6 @@ symbol_dict = {
 }
 
 
-symbols, names = np.array(sorted(symbol_dict.items())).T
 
 quotes = []
 
@@ -101,17 +99,23 @@ quotes = []
 #     quotes.append(pd.read_csv(url.format(symbol)))
 
 stock_ticker_dict = {
-    "TOT": "Total",
-    "XOM": "Exxon",
+    "WFC": "Wells Fargo",
+    "JPM": "JPMorgan Chase",
+    "AIG": "AIG",
+    "AXP": "American express",
+    "BAC": "Bank of America",
+    "GS": "Goldman Sachs","XOM": "Exxon",
     "CVX": "Chevron",
     "COP": "ConocoPhillips",
     "VLO": "Valero Energy",
     "MSFT": "Microsoft",
-    "IBM": "IBM"}
-
+    "IBM": "IBM",
+}
+symbols, names = np.array(sorted(stock_ticker_dict.items())).T
 for ticker in stock_ticker_dict:
     yahoostock = YahooStock(ticker)
-    quotes.append(yahoostock.price_frame)
+    quotes.append(yahoostock.price_frame.iloc[-10:])
+
 close_prices = np.vstack([q["close"] for q in quotes])
 open_prices = np.vstack([q["open"] for q in quotes])
 
