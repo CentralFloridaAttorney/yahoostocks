@@ -328,7 +328,7 @@ for row in range(50, 10, -1):
     import matplotlib.pyplot as plt
     from matplotlib.collections import LineCollection
 
-    plt.figure(1, facecolor="w", figsize=(10, 8))
+    figure = plt.figure(1, facecolor="w", figsize=(10, 8))
     plt.clf()
     current_figure = plt.gcf()
 
@@ -410,6 +410,6 @@ for row in range(50, 10, -1):
     plt.show()
     plt.draw()
     file_name = "./" + str(row)+ "_days_ago.png"
-    plt.savefig(file_name)
+    figure.savefig(file_name, dpi=150)
     time.sleep(2)
 
